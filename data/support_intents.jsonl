@@ -1,0 +1,50 @@
+{"text": "I was charged twice this month, can you help?", "label": "billing"}
+{"text": "Where can I download my invoice?", "label": "billing"}
+{"text": "My payment didn't go through yesterday.", "label": "billing"}
+{"text": "I'd like a refund for last month's charge.", "label": "billing"}
+{"text": "Why did the price of my plan go up?", "label": "billing"}
+{"text": "Can I get a receipt for my last bill?", "label": "billing"}
+{"text": "The amount you charged is higher than expected.", "label": "billing"}
+{"text": "Do you offer discounts for yearly plans?", "label": "billing"}
+{"text": "I need to update my credit card on file.", "label": "billing"}
+{"text": "My invoice lists an item I never bought.", "label": "billing"}
+{"text": "The app keeps crashing when I open it.", "label": "technical"}
+{"text": "I'm getting an error when I try to upload.", "label": "technical"}
+{"text": "Sync is not working between my phone and laptop.", "label": "technical"}
+{"text": "Everything has been really slow since the update.", "label": "technical"}
+{"text": "The export button seems broken.", "label": "technical"}
+{"text": "I think I found a bug in the editor.", "label": "technical"}
+{"text": "The app freezes on startup every time.", "label": "technical"}
+{"text": "Images won't display inside my notes.", "label": "technical"}
+{"text": "The page is stuck loading forever.", "label": "technical"}
+{"text": "Search returns nothing even for exact titles.", "label": "technical"}
+{"text": "I forgot my password and can't reset it.", "label": "account"}
+{"text": "How do I change the email address on my account?", "label": "account"}
+{"text": "I want to update my username.", "label": "account"}
+{"text": "Where are the privacy settings?", "label": "account"}
+{"text": "How do I enable 2fa?", "label": "account"}
+{"text": "I can't log in even with the right password.", "label": "account"}
+{"text": "My profile picture won't update.", "label": "account"}
+{"text": "I'd like to change my notification preferences.", "label": "account"}
+{"text": "Can I merge two accounts into one?", "label": "account"}
+{"text": "How do I reset my security question?", "label": "account"}
+{"text": "I want to cancel my subscription.", "label": "cancellation"}
+{"text": "Please unsubscribe me from the service.", "label": "cancellation"}
+{"text": "How do I delete my account permanently?", "label": "cancellation"}
+{"text": "I'd like to close my account.", "label": "cancellation"}
+{"text": "Cancel my plan, I no longer need it.", "label": "cancellation"}
+{"text": "I want to terminate my contract early.", "label": "cancellation"}
+{"text": "Stop charging me, I'm leaving for good.", "label": "cancellation"}
+{"text": "How can I downgrade and then quit?", "label": "cancellation"}
+{"text": "Please cancel and remove my subscription.", "label": "cancellation"}
+{"text": "I no longer want to use the product.", "label": "cancellation"}
+{"text": "Do you have a mobile app for Android?", "label": "other"}
+{"text": "What are your support hours?", "label": "other"}
+{"text": "Is there a dark mode available?", "label": "other"}
+{"text": "Can you recommend the best plan for a small team?", "label": "other"}
+{"text": "I just wanted to say the new design looks great!", "label": "other"}
+{"text": "Where can I find the user guide?", "label": "other"}
+{"text": "Does the app work offline?", "label": "other"}
+{"text": "How do I invite a colleague to my workspace?", "label": "other"}
+{"text": "What languages does the interface support?", "label": "other"}
+{"text": "Are you hiring engineers right now?", "label": "other"}
