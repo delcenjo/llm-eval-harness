@@ -1,5 +1,7 @@
 # LLM Evaluation Harness
 
+![CI](https://github.com/delcenjo/llm-eval-harness/actions/workflows/ci.yml/badge.svg)
+
 A small, dependency-light harness for **evaluating and comparing classifiers**
 on a labelled dataset — built for the common task of measuring how well an LLM
 prompt actually performs before shipping it.
