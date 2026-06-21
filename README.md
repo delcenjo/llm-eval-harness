@@ -2,75 +2,97 @@
 
 ![CI](https://github.com/delcenjo/llm-eval-harness/actions/workflows/ci.yml/badge.svg)
 
-A small, dependency-light harness for **evaluating and comparing classifiers**
-on a labelled dataset - built for the common task of measuring how well an LLM
-prompt actually performs before shipping it.
+Before you reach for an LLM to classify text, it is worth asking whether it
+actually earns its place. A handful of keyword rules is free, instant, and easy
+to reason about. This project gives you a way to answer the question with
+numbers instead of a hunch: on a labelled dataset, does an LLM classifier
+beat a plain keyword baseline, and by how much?
 
-It ships with two interchangeable predictors:
+The setup is deliberately small. There is one task (routing customer-support
+messages to an intent), two predictors that expose the same `predict(text)`
+method, and one set of metrics applied to both. The baseline runs offline. The
+LLM classifier runs only if you provide an API key. Whatever predictors are
+available get scored side by side in the same table.
 
-- a **rule-based baseline** that runs completely offline, and
-- an **LLM classifier** that you enable by setting an API key.
+## Reading the result
 
-Both are scored with the same metrics, so you can quantify exactly how much the
-LLM improves over a simple baseline.
-
-## What it does
-
-```
-labelled data ─▶ predictor.predict(text) ─▶ metrics ─▶ comparison report
-```
-
-1. Load a JSONL dataset of support messages labelled with their intent.
-2. Run each predictor over every example.
-3. Compute accuracy, macro-F1, per-class precision/recall/F1 and a confusion
-   matrix - all implemented from scratch in `metrics.py`.
-4. Print a comparison table and save a detailed JSON report (including every
-   misclassified example).
-
-## Dataset
-
-`data/support_intents.jsonl` - 50 customer-support messages labelled across five
-intents: `billing`, `technical`, `account`, `cancellation`, `other`.
-
-## Project structure
+Running the harness prints a row per predictor:
 
 ```
-src/llmeval/
-  config.py      paths, labels, model name
-  dataset.py     JSONL loader
-  metrics.py     accuracy, precision/recall/F1, macro-F1, confusion matrix
-  predictors.py  keyword baseline and LLM classifier
-  harness.py     run a predictor and compute its metrics
-  report.py      comparison table and JSON output
-  run.py         CLI entry point
-tests/           metrics, dataset and predictor tests
+predictor                     accuracy  macro_f1   errors
+---------------------------------------------------------
+keyword-baseline                 0.840     0.853    8 / 50
 ```
 
-## Usage
+That is the baseline alone, on the 50-example dataset. Accuracy is the share of
+messages it got right; macro-F1 averages the per-class F1 scores so a rare
+intent counts as much as a common one; `errors` is the raw miss count.
+
+If you dig into the saved JSON report, the failure pattern is the interesting
+part. Anything the rules do not match falls through to `other`, so that bucket
+quietly absorbs most of the mistakes. That is exactly the soft spot you would
+hope an LLM classifier closes, since it can read intent from messages that
+share no obvious keyword. Set an API key and its row appears next to the
+baseline, scored on the same examples, so the comparison is direct.
+
+## How it fits together
+
+The flow is a straight line:
+
+```
+labelled data -> predictor.predict(text) -> metrics -> comparison report
+```
+
+A predictor is just any object with a `name` and a `predict(text)` that returns
+one of the labels. Two ship in `predictors.py`:
+
+- `KeywordBaseline` matches each message against per-intent keyword lists and
+  defaults to `other` when nothing hits. No network, no dependencies.
+- `LLMClassifier` sends the message to an LLM with a short prompt asking for a
+  single category word, then maps the reply back onto the known labels. It needs
+  an API key to run.
+
+The labels are the five support intents: `billing`, `technical`, `account`,
+`cancellation`, and `other`. The dataset lives in
+`data/support_intents.jsonl`, 50 messages each tagged with one of them.
+
+Everything in `metrics.py` is written from scratch rather than pulled from a
+library: accuracy, per-class precision/recall/F1, macro-F1, and a confusion
+matrix. There is no scikit-learn dependency to install, and the math is short
+enough to read in one sitting.
+
+The rest of the modules are small connectors:
+
+| File            | What it holds                                            |
+| --------------- | -------------------------------------------------------- |
+| `config.py`     | paths, the label list, the model name                    |
+| `dataset.py`    | the JSONL loader                                         |
+| `harness.py`    | runs a predictor over the data and computes its metrics  |
+| `report.py`     | prints the comparison table and writes the JSON report   |
+| `run.py`        | the command-line entry point                             |
+
+Tests under `tests/` cover the metric functions, the dataset loader, and the
+keyword baseline's behaviour on a few clear cases.
+
+## Running it
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
-python -m llmeval.run     # evaluates the baseline (and the LLM if a key is set)
+python -m llmeval.run
 pytest
 ```
 
-## Results
+With no key set, `python -m llmeval.run` evaluates the baseline and says so. To
+add the LLM classifier, copy `.env.example` to `.env` and fill in your API key
+(or export it in the shell). The run then scores both predictors and saves a
+detailed report to `reports/results.json`, including every misclassified
+message so you can see precisely where each predictor went wrong.
 
-The offline baseline on the 50-example set:
+## Where this could go
 
-| Predictor          | Accuracy | Macro-F1 | Errors |
-| ------------------ | -------- | -------- | ------ |
-| keyword-baseline   | 0.840    | 0.853    | 8 / 50 |
-
-The detailed report shows where it breaks down: because unmatched messages fall
-back to `other`, that class collects most of the errors - precisely the kind of
-weakness an LLM classifier is expected to fix. With an API key set, the
-LLM classifier is evaluated alongside the baseline in the same table.
-
-## Possible improvements
-
-- An LLM-as-judge evaluator for free-text answers (not just classification).
-- Multiple prompt variants compared side by side.
-- Cross-validation and confidence intervals on the metrics.
+The same shape extends naturally to a few things that are not built yet: an
+LLM-as-judge step for grading free-text answers rather than fixed categories,
+comparing several prompt variants in one run, or putting confidence intervals
+around the numbers so small differences between predictors are not read as real.
