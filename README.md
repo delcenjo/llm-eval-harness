@@ -9,7 +9,7 @@ prompt actually performs before shipping it.
 It ships with two interchangeable predictors:
 
 - a **rule-based baseline** that runs completely offline, and
-- a **Claude classifier** that you enable by setting an API key.
+- an **LLM classifier** that you enable by setting an API key.
 
 Both are scored with the same metrics, so you can quantify exactly how much the
 LLM improves over a simple baseline.
@@ -39,7 +39,7 @@ src/llmeval/
   config.py      paths, labels, model name
   dataset.py     JSONL loader
   metrics.py     accuracy, precision/recall/F1, macro-F1, confusion matrix
-  predictors.py  KeywordBaseline and ClaudeClassifier
+  predictors.py  keyword baseline and LLM classifier
   harness.py     run a predictor and compute its metrics
   report.py      comparison table and JSON output
   run.py         CLI entry point
@@ -52,7 +52,7 @@ tests/           metrics, dataset and predictor tests
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[dev]"
 
-python -m llmeval.run     # evaluates the baseline (and Claude if a key is set)
+python -m llmeval.run     # evaluates the baseline (and the LLM if a key is set)
 pytest
 ```
 
@@ -66,8 +66,8 @@ The offline baseline on the 50-example set:
 
 The detailed report shows where it breaks down: because unmatched messages fall
 back to `other`, that class collects most of the errors - precisely the kind of
-weakness an LLM classifier is expected to fix. With `ANTHROPIC_API_KEY` set, the
-Claude classifier is evaluated alongside the baseline in the same table.
+weakness an LLM classifier is expected to fix. With an API key set, the
+LLM classifier is evaluated alongside the baseline in the same table.
 
 ## Possible improvements
 
